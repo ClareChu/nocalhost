@@ -18,6 +18,7 @@ import (
 	"github.com/spf13/cast"
 	"nocalhost/internal/nocalhost-api/global"
 	"nocalhost/internal/nocalhost-api/model"
+	"nocalhost/pkg/nocalhost-api/app/router/ginbase"
 	"nocalhost/pkg/nocalhost-api/pkg/errno"
 
 	"github.com/gin-gonic/gin"
@@ -72,8 +73,27 @@ func GetList(c *gin.Context) {
 }
 
 func ListAll(c *gin.Context) {
+
+	var params ClusterUserListQuery
+
+	err := c.ShouldBindQuery(&params)
+	if err != nil {
+		api.SendResponse(c, errno.ErrBind, nil)
+		return
+	}
+
 	cu := model.ClusterUserModel{
 	}
+
+	if ginbase.IsAdmin(c) {
+		if params.UserId != nil {
+			cu.UserId = *params.UserId
+		}
+	} else {
+		user, _ := ginbase.LoginUser(c)
+		cu.UserId = user
+	}
+
 	result, err := service.Svc.ClusterUser().GetList(c, cu)
 	if err != nil {
 		api.SendResponse(c, nil, nil)

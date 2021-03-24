@@ -120,6 +120,7 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		a.GET("/:id", applications.GetDetail)
 		a.DELETE("/:id", applications.Delete)
 		a.PUT("/:id", applications.Update)
+		a.PUT("/:id/public", applications.PublicSwitch)
 		a.POST("/:id/bind_cluster", application_cluster.Create)
 		a.GET("/:id/bound_cluster", application_cluster.GetBound)
 		a.POST("/:id/create_space", cluster_user.Create)
